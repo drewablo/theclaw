@@ -38,12 +38,13 @@ public:
         // reverse direction
         increment = -increment;
       }
+      Serial.println(increment);
     }
   }
 };
 
  
-Sweeper sweeper1(15);
+Sweeper sweeper1(5);
 
  
 void setup() 
