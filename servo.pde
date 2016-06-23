@@ -37,38 +37,55 @@ public:
 
   void Update()
   {
-    if((pos <= 30) || (pos>=150)) {
+    if((pos <= 30) || (pos >= 150)) {
 	  if((millis() - lastUpdate) > updateStartInterval)  // time to update
       {
-        lastUpdate = millis();
-        pos += increment;
-        servo.write(pos);
-        Serial.println(pos);
         if ((pos >= 180) || (pos <= 0)) // end of sweep
         {
            // reverse direction
           increment = -increment;
         }
+        lastUpdate = millis();
+        pos += increment;
+        servo.write(pos);
+        Serial.println(pos);
         Serial.println(increment);
       }
-	}
-	else if((pos > 30) || (pos <150))
-	{
+	  }
+	  else if((pos > 30) || (pos < 150))
+	  {
       if((millis() - lastUpdate) > updateQuickInterval)  // time to update
       {
-        lastUpdate = millis();
-        pos += increment;
-        servo.write(pos);
-        Serial.println(pos);
         if ((pos >= 180) || (pos <= 0)) // end of sweep
         {
            // reverse direction
           increment = -increment;
         }
+        lastUpdate = millis();
+        pos += increment;
+        servo.write(pos);
+        Serial.println(pos);
         Serial.println(increment);
       }
-	}
+	  }
+  }
 
+  void Capture()
+  {
+    if((millis() - lastUpdate) > updateQuickInterval)  // time to update
+    {
+      if ((pos >= 180) || (pos <= 0)) // end of sweep
+      {
+         // reverse direction
+        increment = -increment;
+      }
+      lastUpdate = millis();
+      pos += increment;
+      servo.write(pos);
+      Serial.println(pos);
+
+      Serial.println(increment);
+  }
   }
 };
 
@@ -87,7 +104,7 @@ public:
   {
     cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF);
   }
-  void readSensor()
+  bool readSensor()
   {
       if(mills() - updateStartInterval > lastUpdate)
       {
@@ -99,6 +116,14 @@ public:
 
         Serial.print(total1);                  // print sensor output 1
 
+        if (total1 >= 400)
+        {
+          return true;
+        }
+        else
+        {
+          return false;
+        }
       //  delay(10);                             // arbitrary delay to limit data to serial port
       }
     }
@@ -121,6 +146,9 @@ void setup()
 
 void loop()
 {
-  sensor1.readSesnor();
+  if (sensor1.readSesnor() == true)
+  {
+    sweeper1.capture();
+  }
   //sweeper1.Update();
 }
